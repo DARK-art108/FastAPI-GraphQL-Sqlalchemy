@@ -1,6 +1,6 @@
 import strawberry
 import typing
-from models.user import users
+from models.index import users
 from conn.db import conn
 
 
@@ -28,4 +28,12 @@ class Mutation:
         result = conn.execute(query)
         return int(result.inserted_primary_key[0])
     @strawberry.mutation
-    #def update_user(self, info, id: int, name: str, email: str, password: str) -> bool:
+    def update_user(self, info, id: int, name: str, email: str, password: str) -> bool:
+        query = users.update().where(users.c.id == id).values(name=name, email=email, password=password)
+        result = conn.execute(query)
+        return str(result.rowcount)+ " row(s) updated"
+    @strawberry.mutation
+    def delete_user(self, info, id: int) -> bool:
+        query = users.delete().where(users.c.id == id)
+        result = conn.execute(query)
+        return result.rowcount > 0
